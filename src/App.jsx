@@ -1,41 +1,27 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./App.css";
+import RootLayout from "./pages/Root";
+import HomePage from "./pages/Home";
+import DeviceContextProvider from "./store/devices-context";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      // { path: "about", element: <AboutPage /> },
+      // { path: "support", element: <SupportPage /> },
+    ],
+  },
+]);
 
 function App() {
-  const [plcs, setPlcs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('http://localhost:8000/plcs')
-      .then((response) => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      })
-      .then((data) => {
-        setPlcs(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching PLCs:', error);
-        setLoading(false);
-      });
-  }, []);
-
   return (
-    <div>
-      <h1>PLCs:</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul>
-          {plcs.map((plc, index) => (
-            <li key={index}>{JSON.stringify(plc)}</li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <DeviceContextProvider>
+      <RouterProvider router={router} />
+    </DeviceContextProvider>
   );
 }
 
 export default App;
-
